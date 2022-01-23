@@ -1,136 +1,95 @@
 # GildedRose Kata - PHP Version
 
-See the [top level readme](../README.md) for general information about this exercise. This is the PHP version of the
-GildedRose Kata.
+Original Gilded kata PHP : https://github.com/emilybache/GildedRose-Refactoring-Kata/tree/main/php
+
 
 ## Installation
 
-The kata uses:
+Either use Docker using the image of this project : 
 
-- [PHP 7.3 or 7.4 or 8.0+](https://www.php.net/downloads.php)
-- [Composer](https://getcomposer.org)
-
-Recommended:
-
-- [Git](https://git-scm.com/downloads)
-
-Clone the repository
-
-```sh
-git clone git@github.com:emilybache/GildedRose-Refactoring-Kata.git
-```
-
-or
 
 ```shell script
-git clone https://github.com/emilybache/GildedRose-Refactoring-Kata.git
+docker pull ghcr.io/resshins/gildedrose-refactoring:v1
 ```
 
-Install all the dependencies using composer
+It contains an image of apache2 with PHP 8.1 with the source of this project.
+Then 
 
 ```shell script
-cd ./GildedRose-Refactoring-Kata/php
-composer install
+docker run -d -p 80:80 <image_id>
 ```
 
-## Dependencies
+as a reminder, you can retrieve the image id with : 
 
-The project uses composer to install:
+```shell script
+docker image list
+```
 
-- [PHPUnit](https://phpunit.de/)
-- [ApprovalTests.PHP](https://github.com/approvals/ApprovalTests.php)
-- [PHPStan](https://github.com/phpstan/phpstan)
-- [Easy Coding Standard (ECS)](https://github.com/symplify/easy-coding-standard)
-- [PHP CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer/wiki)
+
+Either get the source file using :  
+
+```shell script
+git clone https://github.com/resshins/GildedRose-Refactoring-Kata-reviewed.git
+```
+
+Then  use a webserver (apache, nginx, etc) to run the code
+
+## Docker compilation
+
+2 files required : 
+
+docker-compose.yml : 
+
+```shell script
+version : '3.8'
+services:
+  php:   
+    build:
+      context: .
+      dockerfile: ./Dockerfile-WebSrv
+    image: php:8.1-apache
+    container_name: apachephpcont
+    ports:   
+      - 80:80
+    volumes: 
+      - ./GildedRose-Refactoring-Kata-reviewed:/var/www/html/ 
+```
+
+
+Dockerfile-WebSrv : 
+
+```shell script
+FROM php:8.1-apache
+
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+RUN service apache2 restart
+COPY GildedRose-Refactoring-Kata-reviewed /var/www/html/
+RUN chown -R www-data:www-data /var/www/html
+```
+
+To compile the source : 
+
+```shell script
+docker-compose up --build -V
+```
+
 
 ## Folders
 
 - `src` - contains the two classes:
     - `Item.php` - this class should not be changed
-    - `GildedRose.php` - this class needs to be refactored, and the new feature added
+    - `GildedRose.php` - this class is refactored 
 - `tests` - contains the tests
     - `GildedRoseTest.php` - starter test.
-        - Tip: ApprovalTests has been included as a dev dependency, see the PHP version of
-          the [Theatrical Players Refactoring Kata](https://github.com/emilybache/Theatrical-Players-Refactoring-Kata/)
-          for an example
+- `index.php` - basic page to give an example of usage
 - `Fixture`
     - `texttest_fixture.php` this could be used by an ApprovalTests, or run from the command line
 
+
 ## Testing
 
-PHPUnit is configured for testing, a composer script has been provided. To run the unit tests, from the root of the PHP
-project run:
+PHPUnit updated to cover all business rules. 
 
 ```shell script
 composer test
 ```
-
-A Windows a batch file has been created, like an alias on Linux/Mac (e.g. `alias pu="composer test"`), the same
-PHPUnit `composer test` can be run:
-
-```shell script
-pu
-```
-
-### Tests with Coverage Report
-
-To run all test and generate a html coverage report run:
-
-```shell script
-composer test-coverage
-```
-
-The test-coverage report will be created in /builds, it is best viewed by opening /builds/**index.html** in your
-browser.
-
-## Code Standard
-
-Easy Coding Standard (ECS) is configured for style and code standards, **PSR-12** is used. The current code is not upto
-standard!
-
-### Check Code
-
-To check code, but not fix errors:
-
-```shell script
-composer check-cs
-``` 
-
-On Windows a batch file has been created, like an alias on Linux/Mac (e.g. `alias cc="composer check-cs"`), the same
-PHPUnit `composer check-cs` can be run:
-
-```shell script
-cc
-```
-
-### Fix Code
-
-ECS provides may code fixes, automatically, if advised to run --fix, the following script can be run:
-
-```shell script
-composer fix-cs
-```
-
-On Windows a batch file has been created, like an alias on Linux/Mac (e.g. `alias fc="composer fix-cs"`), the same
-PHPUnit `composer fix-cs` can be run:
-
-```shell script
-fc
-```
-
-## Static Analysis
-
-PHPStan is used to run static analysis checks:
-
-```shell script
-composer phpstan
-```
-
-On Windows a batch file has been created, like an alias on Linux/Mac (e.g. `alias ps="composer phpstan"`), the same
-PHPUnit `composer phpstan` can be run:
-
-```shell script
-ps
-```
-
-**Happy coding**!
