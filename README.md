@@ -9,7 +9,7 @@ Either use Docker using the image of this project :
 
 
 ```shell script
-docker pull ghcr.io/resshins/gildedrose-refactoring:v1
+docker pull ghcr.io/resshins/gildedrose-refactoring:v1.0
 ```
 
 It contains an image of apache2 with PHP 8.1 with the source of this project.
